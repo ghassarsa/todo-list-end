@@ -7,65 +7,61 @@ use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'email' => 'required|email|unique:users,email',
+            'password' => [
+                'required',
+                'string',
+                'min:6',
+            ],
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-        
-        $freePlan = Plan::where('name', 'Free')->first();
-        if (!$freePlan) {
-            return response()->json(['massage' => 'Default plan not found.'], 500);
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'passoword' => bcrypt($request->password),
-            'plan_id' => $freePlan->id,
+            'password' => Hash::make($request->password),
+            'role' => 'client',
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
-            'massage' => 'User Created Successfully',
-            'user' => $user,
-            'token' => $token
+            'message' => 'User registered successfully',
+            'user' => $user
         ], 201);
     }
 
-    public function login(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-            ]
-        );
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        if (!Auth::attempt($request->only('email','password'))) {
+        if (!Auth::attempt($credentials)) {
             return response()->json([
-                'massage' => 'Invalid login details'
+                'message' => 'Login gagal, email atau password salah'
             ], 401);
         }
 
         $user = Auth::user();
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('api-token')->plainTextToken;
+
         return response()->json([
-            'massage' => 'Login Successful',
-            'user' => $user,
+            'message' => 'Login berhasil!',
             'token' => $token,
+            'user' => $user
         ]);
     }
 
@@ -73,9 +69,13 @@ class AuthController extends Controller
         return response()->json(Auth::user());
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         $request->user()->currentAccessToken()->delete();
-        return response()->json(['massage' => 'Successfully logged out']);
+
+        return response()->json([
+            'message' => 'Logged out successfully',
+        ]);
     }
 
     public function oAuthUrl() {
