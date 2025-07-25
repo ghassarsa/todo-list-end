@@ -103,7 +103,7 @@ class SubTaskController extends Controller
     }
 
     public function changeStatus(Request $request) {
-        $id = $request->query('subtask_id');
+        $id = $request->input('subtask_id');
         $subtask = Subtask::findOrFail($id);
         $task = $subtask->task;
 
