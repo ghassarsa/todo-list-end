@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\SubTaskController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PlanController;
+use App\Http\Controllers\Api\V1\UserController;
 
 Route::prefix('v1')->group(function () {
     Route::controller(AuthController::class)->group(function () {
@@ -34,6 +35,13 @@ Route::prefix('v1')->group(function () {
             Route::get('/me', [AuthController::class, 'me']);
             Route::post('/logout', [AuthController::class, 'logout']);
         });
+    });
+
+    Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user/me', [UserController::class, 'me']);
+    Route::post('/user/update', [UserController::class, 'update']);
+    Route::delete('/user/delete-avatar', [UserController::class, 'deleteAvatar']);
+    Route::post('/user/change-password', [UserController::class, 'changePassword']);
     });
 
     Route::get('plans', [PlanController::class, 'index']);
