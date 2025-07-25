@@ -48,8 +48,10 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('tasks', TaskController::class)->only(['index', 'store', 'show', 'destroy']);
         Route::post('tasks/{id}', [TaskController::class, 'update']);
-        Route::apiResource('subtasks', SubTaskController::class)->only(['index', 'store', 'destroy']);
-        Route::post('subtasks/{id}', [SubTaskController::class, 'update']);
+        Route::post('/subtasks/change-status', [SubtaskController::class, 'changeStatus']);
+        Route::apiResource('subtasks', SubtaskController::class)->only(['index', 'destroy']);
+        Route::post('subtasks', [SubtaskController::class, 'store']);
+        Route::post('subtasks/{id}', [SubtaskController::class, 'update']);        
         Route::apiResource('orders', OrderController::class)->only(['index', 'store', 'show', 'destroy']);
         Route::apiResource('payments', PaymentController::class)->only(['index', 'store', 'show']);
     });

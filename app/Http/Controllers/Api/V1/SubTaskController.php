@@ -87,19 +87,19 @@ class SubTaskController extends Controller
     }
 
     public function destroy(string $id) {
-        $subtask = Subtask::findOrFail($id);
-        $task = $subtask->task;
+    $subtask = Subtask::findOrFail($id);
+    $task = $subtask->task;
 
-        if (Auth::id() !== $task->user_id || $subtask->task_id !== $task->id) {
-            return response()->json([
-                'massage' => 'Unauthorized or Invalid Resource' 
-            ], 403);
+    if (Auth::id() !== $task->user_id || $subtask->task_id !== $task->id) {
+        return response()->json([
+            'massage' => 'Unauthorized or Invalid Resource' 
+        ], 403);
+    }
             
-            $subtask->delete();
-            return response()->json([
-                'massage' => 'Subtask Deleted Successfully'
-            ]);
-        }
+        $subtask->delete();
+        return response()->json([
+            'massage' => 'Subtask Deleted Successfully'
+        ]);
     }
 
     public function changeStatus(Request $request) {
@@ -114,7 +114,7 @@ class SubTaskController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'status' => 'required|in:pending,in_progress.completed',
+            'status' => 'required|in:pending,in_progress,completed',
         ]);
 
         if ($validator->fails()) {
