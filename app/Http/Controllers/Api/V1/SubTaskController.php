@@ -13,7 +13,7 @@ class SubTaskController extends Controller
     public function index() {
         $id = request()->query('task_id');
 
-        if ($id) {
+        if (!$id) {
             return response()->json([
                 'massage' => 'Task ID is Required'
             ], 400);

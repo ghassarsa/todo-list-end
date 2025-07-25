@@ -50,7 +50,6 @@ Route::prefix('v1')->group(function () {
         Route::post('tasks/{id}', [TaskController::class, 'update']);
         Route::apiResource('subtasks', SubTaskController::class)->only(['index', 'store', 'destroy']);
         Route::post('subtasks/{id}', [SubTaskController::class, 'update']);
-        Route::post('subtasks', [SubTaskController::class, 'changeStatus']);
         Route::apiResource('orders', OrderController::class)->only(['index', 'store', 'show', 'destroy']);
         Route::apiResource('payments', PaymentController::class)->only(['index', 'store', 'show']);
     });
