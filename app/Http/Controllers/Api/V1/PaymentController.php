@@ -26,11 +26,11 @@ class PaymentController extends Controller
     }
 
     public function store(Request $request) {
-        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        Config::$clientKey = env('MIDTRANS_CLIENT_KEY');
-        Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
-        Config::$isSanitized = env('MIDTRANS_IS_SANITIZED', true);
-        Config::$is3ds = env('MIDTRANS_IS_3DS', true);
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$clientKey = env('MIDTRANS_CLIENT_KEY');
+        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+        \Midtrans\Config::$isSanitized = env('MIDTRANS_IS_SANITIZED', true);
+        \Midtrans\Config::$is3ds = env('MIDTRANS_IS_3DS', true);
 
         DB::beginTransaction();
         try {
@@ -39,6 +39,7 @@ class PaymentController extends Controller
                 'order_id' => 'required|exists:orders,id',
             ]);
 
+            $order = Order::findOrFail($request->order_id);
             if ($validator->fails()) {
                 return response()->json(['error' => 'Order is not in pending status'], 400);
             }
@@ -56,7 +57,7 @@ class PaymentController extends Controller
 
             $midtransPayLoad = [
                 'transaction_details' => [
-                    'order_id' => $order_id . '-' . uniqid(),
+                    'order_id' => $order->id . '-' . uniqid(),
                     'gross_amount' => round($order->amount),
                 ],
                 'customer_details' => [
@@ -74,14 +75,14 @@ class PaymentController extends Controller
             DB::commit();
 
             return response()->json([
-                'massage' => 'Payment created',
+                'message' => 'Payment created',
                 'payment' => $newPayment,
             ], 201);
         } catch (\Throwable $e) {
             DB::rollBack();
             return response()->json([
                 'error' => 'Transaction Failed',
-                'massage' => $e->getMessage(),
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

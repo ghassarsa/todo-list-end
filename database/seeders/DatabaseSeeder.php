@@ -27,10 +27,24 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Plan::create([
-            "name" => 'Free',
-            "description" => '',
-            "price" => 0,
-            "task_limit" => 2,
+            'name' => 'Free',
+            'description' => 'Free plan with basic features',
+            'price' => 0,
+            'task_limit' => 1,
+        ]);
+
+        Plan::create([
+            'name' => 'Pro',
+            'description' => 'Pro plan with advanced features',
+            'price' => 199000,
+            'task_limit' => 10,
+        ]);
+
+        Plan::create([
+            'name' => 'Company',
+            'description' => 'Premium plan with all features',
+            'price' => 399000,
+            'task_limit' => 100,
         ]);
     }
 }

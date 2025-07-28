@@ -35,7 +35,7 @@ class OrderController extends Controller
             return response()->json(['massage' => 'You are already on this plan']);
         }
 
-        if ($plan->task_limit < $currentPlan->task_limit) {
+        if ($currentPlan && $plan->task_limit < $currentPlan->task_limit) {
             return response()->json(['massage' => 'You cannot downgrade your plan']);
         }
 
@@ -45,7 +45,7 @@ class OrderController extends Controller
             return response()->json(['massage' => 'You already have an order for this plan'], 403);
         }
 
-        $newOrder = Order::craete([
+        $newOrder = Order::create([
             'user_id' => $user->id,
             'plan_id' => $plan->id,
             'status' => 'pending',

@@ -54,6 +54,8 @@ Route::prefix('v1')->group(function () {
         Route::post('subtasks/{id}', [SubtaskController::class, 'update']);        
         Route::apiResource('orders', OrderController::class)->only(['index', 'store', 'show', 'destroy']);
         Route::apiResource('payments', PaymentController::class)->only(['index', 'store', 'show']);
+        Route::apiResource('orders', OrderController::class)->only(['index', 'store', 'show', 'destroy']);
+        Route::apiResource('payments', PaymentController::class)->only(['index', 'store', 'show']);
     });
     Route::post('/payments/callback', [PaymentController::class, 'callback']);
 
