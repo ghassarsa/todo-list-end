@@ -32,11 +32,16 @@ class AuthController extends Controller
             ], 422);
         }
 
+        $freePlan = Plan::where('name', 'Free')->first();
+        if (!$freePlan) {
+            return response()->json(['message' => 'Default plan not found.'], 500);
+        }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'client',
+            'plan_id' => $freePlan->id,
         ]);
 
         return response()->json([

@@ -26,6 +26,15 @@ class DatabaseSeeder extends Seeder
             'is_admin' => false,
         ]);
 
+        User::create([
+            'name' => 'Admin',
+            'email' => 'Admin@example.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'avatar' => null,
+            'is_admin' => true,
+        ]);
+
         Plan::create([
             'name' => 'Free',
             'description' => 'Free plan with basic features',

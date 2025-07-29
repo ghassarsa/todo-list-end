@@ -102,7 +102,7 @@ class PaymentController extends Controller
     }
 
     public function generateInvoice($orderId, $user, $plan) {
-        $invoiceNumber = 'INV-' . stroupper(uniqid());
+        $invoiceNumber = 'INV-' . strtoupper(uniqid());
         $data = [
             'invoice_number' => $invoiceNumber,
             'date' => now()->format('d M Y'),
@@ -131,24 +131,26 @@ class PaymentController extends Controller
 
         $user = $order->user;
         $plan = $order->plan;
+        // dd($request);
+if ($request->transaction_status === 'settlement') {
+    $payment = Payment::where('order_id', $orderId)->first();
+    if (!$payment) {
+        return response()->json(['error' => 'Payment not found.'], 404);
+    }
 
-        if ($request->transaction_status === 'settlement') {
-            $payment = Payment::where('order_id', $orderId)->first();
-            if (!$payment) {
-                return response()->json(['error' => 'Payment not found.'], 404);
-            }
+    $payment->update([
+        'transaction_status' => 'success',
+        'paid_at' => now(),
+    ]);
+    $order->update(['status' => 'completed']);
 
-            $payment->update([
-                'transaction_status' => 'success',
-                'paid_at' => now(),
-            ]);
-            $order->update(['status' => 'completed']);
+    // ✅ Update user plan
+    $user->update(['plan_id' => $plan->id]);
 
-            $this->generateInvoice($orderId, $user, $plan);
+    $this->generateInvoice($orderId, $user, $plan);
 
-            return response()->json(['massage' => 'Payment successful', 'payment' => $payment], 200);
-        } else {
-            return response()->json(['massage' => 'Payment status' . $request->transaction_status], 200);
-        }
+    return response()->json(['message' => 'Payment successful', 'payment' => $payment], 200);
+}
+
     }
 }
