@@ -144,8 +144,10 @@ if ($request->transaction_status === 'settlement') {
     ]);
     $order->update(['status' => 'completed']);
 
-    // ✅ Update user plan
-    $user->update(['plan_id' => $plan->id]);
+    $user->update([
+        'plan_id' => $plan->id,
+        'status' => 'premium',
+    ]);
 
     $this->generateInvoice($orderId, $user, $plan);
 
