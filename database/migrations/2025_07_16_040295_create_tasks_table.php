@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('video')->nullable();
             $table->string('image')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->enum('completed', ['no', 'yes'])->default('no');
             $table->timestamps();
         });
     }

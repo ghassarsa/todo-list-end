@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -118,5 +119,35 @@ class TaskController extends Controller
 
         $task->delete();
         return response()->json(['massage' => 'Task Deleted Successfully']);
+    }
+
+    public function validation($id) {
+        $task = Task::findOrFail($id);
+        $task->completed = 'yes';
+        $saved = $task->save();
+
+        if (!$saved) {
+            return response()->json(['message' => 'Gagal untuk mengubah status dari tugas anda']);
+        }
+
+        return response()->json([
+            'message' => 'Task berhasil diselesaikan',
+            'task' => $task
+        ]);
+    }
+
+    public function restoreTask($id) {
+        $task = Task::findOrFail($id);
+        $task->completed = 'no';
+        $saved = $task->save();
+
+        if (!$saved) {
+            return response()->json(['message' => 'Gagal untuk mengubah status dari tugas anda']);
+        }
+
+        return response()->json([
+            'message' => 'Task berhasil diselesaikan',
+            'task' => $task
+        ]);
     }
 }

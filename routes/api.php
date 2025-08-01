@@ -56,6 +56,8 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('payments', PaymentController::class)->only(['index', 'store', 'show']);
         Route::apiResource('orders', OrderController::class)->only(['index', 'store', 'show', 'destroy']);
         Route::apiResource('payments', PaymentController::class)->only(['index', 'store', 'show']);
+        Route::post('/tasks/{id}/complete', [TaskController::class, 'validation']);
+        Route::post('/tasks/{id}/restore', [TaskController::class, 'restoreTask']);
     });
     Route::post('/payments/callback', [PaymentController::class, 'callback']);
 
